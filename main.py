@@ -307,6 +307,7 @@ def main_menu(ventana_x, ventana_y, nivel, ganado, cant_niveles):
     if ev.type == gamelib.EventType.ButtonPress:
       x, y = ev.x, ev.y
       what_to_do = what_button(x, y)
+      print(what_to_do)
       if what_to_do == True:
         nivel = 1
         return nivel
