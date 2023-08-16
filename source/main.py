@@ -26,6 +26,10 @@
 import soko
 import gamelib
 from modulo_cola_pila import Pila
+import sys
+import os
+import stat
+import subprocess
 
 NORTE = (0 ,-1)
 SUR = (0, 1)
@@ -53,24 +57,37 @@ NUEVO_JUEGO_TEXTO = "Nuevo juego"
 SALIR_TEXTO = "Salir"
 SELECCIONAR_NIVEL_TEXTO = "Seleccionar nivel"
 
-# Ruta a imágenes e archivos(las cte están en inglés para intentar diferenciarlas a simple vista de las constantes propias del módulo soko)
+# (las cte están en inglés para intentar diferenciarlas a simple vista de las constantes propias del módulo soko)
+# For PyInstaller
+def resourcePath(relativePath: str):
+  """ Get absolute path to resource, works for dev and for PyInstaller """
+  try:
+    # PyInstaller creates a temp folder and stores path in _MEIPASS
+    basePath = sys._MEIPASS
+  except Exception:
+    basePath = os.path.abspath(".")
 
-RUTA_NIVELES = "niveles.txt"
-RUTA_TECLAS = "teclas.txt"
+  return os.path.join(basePath, relativePath)
+
+# Ruta a imágenes e archivos
+
+RUTA_NIVELES =  resourcePath("niveles.txt") 
+RUTA_TECLAS = resourcePath("teclas.txt")
 RUTA_SAVE = "save.txt"
+FOLDER_PATH = resourcePath("img")
 
 # 100%
 
 LONGITUD_CELDA_X = 64
 LONGITUD_CELDA_Y = 64
 
-PLAYER = "img/player.gif"
-BOX = "img/box.gif"
-GROUND = "img/ground.gif"
-WALL = "img/wall.gif"
-GOAL = "img/goal.gif"
-END_KANNA = "img/kanna_thumbs_up.gif"
-MIO_SCARED = "img/mio_scared.gif"
+PLAYER = FOLDER_PATH + "/player.gif"
+BOX = FOLDER_PATH + "/box.gif"
+GROUND = FOLDER_PATH + "/ground.gif"
+WALL = FOLDER_PATH + "/wall.gif"
+GOAL = FOLDER_PATH + "/goal.gif"
+END_KANNA = FOLDER_PATH + "/kanna_thumbs_up.gif"
+MIO_SCARED = FOLDER_PATH + "/mio_scared.gif"
 
 # 75%
 
@@ -79,11 +96,11 @@ LIMITE_CELDAS_75_X = 22 ; LIMITE_CELDAS_75_Y = 12
 LONGITUD_CELDA_X_C = 48
 LONGITUD_CELDA_Y_C = 48
 
-PLAYER_48 = "img/player_48.gif"
-BOX_48 = "img/box_48.gif"
-GROUND_48 = "img/ground_48.gif"
-WALL_48 = "img/wall_48.gif"
-GOAL_48 = "img/goal_48.gif"
+PLAYER_48 = FOLDER_PATH + "/player_48.gif"
+BOX_48 = FOLDER_PATH + "/box_48.gif"
+GROUND_48 = FOLDER_PATH + "/ground_48.gif"
+WALL_48 = FOLDER_PATH + "/wall_48.gif"
+GOAL_48 = FOLDER_PATH + "/goal_48.gif"
 
 # 50%
 
@@ -93,11 +110,11 @@ LIMITE_CELDAS_50_Y = 16
 LONGITUD_CELDA_X_M = 32
 LONGITUD_CELDA_Y_M = 32
 
-PLAYER_32 = "img/player_32.gif"
-BOX_32 = "img/box_32.gif"
-GROUND_32 = "img/ground_32.gif"
-WALL_32 = "img/wall_32.gif"
-GOAL_32 = "img/goal_32.gif"
+PLAYER_32 = FOLDER_PATH + "/player_32.gif"
+BOX_32 = FOLDER_PATH + "/box_32.gif"
+GROUND_32 = FOLDER_PATH + "/ground_32.gif"
+WALL_32 = FOLDER_PATH + "/wall_32.gif"
+GOAL_32 = FOLDER_PATH + "/goal_32.gif"
 
 # Ascii
 
@@ -621,12 +638,9 @@ def main():
       # En todos los casos necesarios vacío las pilas de pistas y estados anteriores
       
       if ev.type == gamelib.EventType.KeyPress and tecla == teclas["SALIR"][0]:
-        with open(RUTA_SAVE, "w") as save:
-          save.write(str(nivel) + "\n")
-          if ganado:
-            save.write("Ganado=True\n")
-          else:
-            save.write("Ganado=False\n")
+        
+        write_savefile(nivel, ganado)
+   
         return 
           
       if ev.type == gamelib.EventType.KeyPress and tecla == teclas["REINICIAR"][0]:
@@ -747,9 +761,25 @@ def main():
     if not ev:
       break
     if ev.type == gamelib.EventType.KeyPress:
-      with open(RUTA_SAVE, "w", encoding="utf-8") as save:
-        save.write(str(nivel) + "\n")
-        save.write("Ganado=True\n")
+      write_savefile(nivel, True)
       return {}
+
+def write_savefile(nivel, ganado):
+    if(os.path.exists(RUTA_SAVE)):
+       with open(RUTA_SAVE, "r+") as save:
+        save.write(str(nivel) + "\n")
+        if ganado:
+          save.write("Ganado=True\n")
+        else:
+          save.write("Ganado=False\n")
+    else:
+      with open(RUTA_SAVE, "w") as save:
+        save.write(str(nivel) + "\n")
+        if ganado:
+          save.write("Ganado=True\n")
+        else:
+          save.write("Ganado=False\n")
+        
+        subprocess.check_call(["attrib", "+H", RUTA_SAVE])
 
 gamelib.init(main)
