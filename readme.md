@@ -1,13 +1,11 @@
 Hecho como proyecto final de la materia algoritmos I
 
- Version 3, ahora es personal
-
 Controles:
   WASD o flechas -> movimiento
-  h              -> pista (más que nada utiliza el algoritmo bracktrack para encontrar una solución y completar el nivel)
+  h              -> pista
   b              -> deshacer para el último movimiento hecho
   r              -> reiniciar el nivel
-  Esc            -> salir (por diversas carencias, intentar cerrar la ventana clickeando (X) crashea python)
+  Esc            -> salir
 
 Se pueden cambiar los controles modificando el archivo "teclas.txt"
 
