@@ -19,3 +19,5 @@ niveles sacados de
 
 Página de github de gamelib  
   https://github.com/dessaya/python-gamelib  
+
+### Runs only on windows
